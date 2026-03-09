@@ -1,13 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Don't fail the build if env vars aren't set yet (Replit sets them at runtime)
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ['pg', 'bcryptjs'],
+  // Move pg and bcryptjs to server-only to avoid bundling issues
+  experimental: {
+    serverComponentsExternalPackages: ['pg', 'bcryptjs'],
+  },
+  // Allow Replit's proxied dev domain for hot-reload
+  allowedDevOrigins: [
+    process.env.REPLIT_DEV_DOMAIN,
+    process.env.REPLIT_DOMAINS,
+  ].filter(Boolean),
 };
 
 module.exports = nextConfig;
