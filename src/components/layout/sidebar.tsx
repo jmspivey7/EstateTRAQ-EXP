@@ -19,6 +19,7 @@ import {
   Gem,
   DollarSign,
   Scale,
+  Sheet,
   Settings,
   ChevronDown,
   LogOut,
@@ -40,6 +41,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Gem,
   DollarSign,
   Scale,
+  Sheet,
 };
 
 interface SidebarProps {

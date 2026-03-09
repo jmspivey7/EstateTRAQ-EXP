@@ -14,6 +14,34 @@ const db = drizzle(pool, { schema });
 async function seed() {
   console.log("Seeding EstateTRAQ v2 demo data...\n");
 
+  // === CLEANUP (so seed can be re-run safely) ===
+  console.log("Clearing existing data...");
+  await db.delete(schema.activityLog);
+  await db.delete(schema.familySettings);
+  await db.delete(schema.executorUpdates);
+  await db.delete(schema.distributions);
+  await db.delete(schema.heirs);
+  await db.delete(schema.complianceItems);
+  await db.delete(schema.documents);
+  await db.delete(schema.personalAssets);
+  await db.delete(schema.businessInterests);
+  await db.delete(schema.insurancePolicies);
+  await db.delete(schema.oilGasMinerals);
+  await db.delete(schema.realEstate);
+  await db.delete(schema.portfolioSnapshots);
+  await db.delete(schema.historicalPrices);
+  await db.delete(schema.holdings);
+  await db.delete(schema.transactions);
+  await db.delete(schema.accounts);
+  await db.delete(schema.plaidItems);
+  await db.delete(schema.incomeStreams);
+  await db.delete(schema.expenses);
+  await db.delete(schema.familyUsers);
+  await db.delete(schema.users);
+  await db.delete(schema.families);
+  await db.delete(schema.organizations);
+  console.log("Existing data cleared.\n");
+
   const passwordHash = await bcrypt.hash("demo123", 12);
 
   // === ORGANIZATION ===
@@ -113,6 +141,32 @@ async function seed() {
     });
   }
   console.log("Created Woodward accounts");
+
+  // === WOODWARD HOLDINGS (stock positions in brokerage/retirement accounts) ===
+  await db.insert(schema.holdings).values([
+    // Robert Fidelity Brokerage positions
+    { familyId: woodwardFamily.id, symbol: "AAPL", name: "Apple Inc.", shares: "2800", costBasis: "385000", currentPrice: "178.52", previousClose: "176.80", dayChange: "1.72", dayChangePercent: "0.97" },
+    { familyId: woodwardFamily.id, symbol: "MSFT", name: "Microsoft Corp.", shares: "1500", costBasis: "420000", currentPrice: "415.60", previousClose: "412.30", dayChange: "3.30", dayChangePercent: "0.80" },
+    { familyId: woodwardFamily.id, symbol: "GOOGL", name: "Alphabet Inc. Class A", shares: "1200", costBasis: "156000", currentPrice: "174.85", previousClose: "173.20", dayChange: "1.65", dayChangePercent: "0.95" },
+    { familyId: woodwardFamily.id, symbol: "JPM", name: "JPMorgan Chase & Co.", shares: "2000", costBasis: "280000", currentPrice: "198.40", previousClose: "196.50", dayChange: "1.90", dayChangePercent: "0.97" },
+    { familyId: woodwardFamily.id, symbol: "JNJ", name: "Johnson & Johnson", shares: "1800", costBasis: "270000", currentPrice: "158.25", previousClose: "157.80", dayChange: "0.45", dayChangePercent: "0.29" },
+    { familyId: woodwardFamily.id, symbol: "BRK.B", name: "Berkshire Hathaway Class B", shares: "800", costBasis: "240000", currentPrice: "412.80", previousClose: "410.15", dayChange: "2.65", dayChangePercent: "0.65" },
+    { familyId: woodwardFamily.id, symbol: "VTI", name: "Vanguard Total Stock Market ETF", shares: "5200", costBasis: "1020000", currentPrice: "264.30", previousClose: "262.90", dayChange: "1.40", dayChangePercent: "0.53" },
+    { familyId: woodwardFamily.id, symbol: "VXUS", name: "Vanguard Total International Stock ETF", shares: "4500", costBasis: "234000", currentPrice: "58.45", previousClose: "58.10", dayChange: "0.35", dayChangePercent: "0.60" },
+    { familyId: woodwardFamily.id, symbol: "BND", name: "Vanguard Total Bond Market ETF", shares: "6000", costBasis: "462000", currentPrice: "72.85", previousClose: "72.90", dayChange: "-0.05", dayChangePercent: "-0.07" },
+    // Catherine Schwab Brokerage positions
+    { familyId: woodwardFamily.id, symbol: "AMZN", name: "Amazon.com Inc.", shares: "1600", costBasis: "220000", currentPrice: "185.40", previousClose: "183.90", dayChange: "1.50", dayChangePercent: "0.82" },
+    { familyId: woodwardFamily.id, symbol: "NVDA", name: "NVIDIA Corp.", shares: "900", costBasis: "180000", currentPrice: "875.30", previousClose: "868.50", dayChange: "6.80", dayChangePercent: "0.78" },
+    { familyId: woodwardFamily.id, symbol: "V", name: "Visa Inc.", shares: "1100", costBasis: "242000", currentPrice: "280.15", previousClose: "278.40", dayChange: "1.75", dayChangePercent: "0.63" },
+    { familyId: woodwardFamily.id, symbol: "PG", name: "Procter & Gamble Co.", shares: "1400", costBasis: "196000", currentPrice: "165.80", previousClose: "165.20", dayChange: "0.60", dayChangePercent: "0.36" },
+    { familyId: woodwardFamily.id, symbol: "XOM", name: "Exxon Mobil Corp.", shares: "2200", costBasis: "198000", currentPrice: "104.60", previousClose: "103.85", dayChange: "0.75", dayChangePercent: "0.72" },
+    { familyId: woodwardFamily.id, symbol: "SCHD", name: "Schwab U.S. Dividend Equity ETF", shares: "3800", costBasis: "266000", currentPrice: "78.40", previousClose: "78.15", dayChange: "0.25", dayChangePercent: "0.32" },
+    // IRA positions (more conservative)
+    { familyId: woodwardFamily.id, symbol: "VBTLX", name: "Vanguard Total Bond Market Index", shares: "8500", costBasis: "850000", currentPrice: "10.42", previousClose: "10.43", dayChange: "-0.01", dayChangePercent: "-0.10" },
+    { familyId: woodwardFamily.id, symbol: "VTSAX", name: "Vanguard Total Stock Market Index", shares: "7200", costBasis: "680000", currentPrice: "118.50", previousClose: "117.85", dayChange: "0.65", dayChangePercent: "0.55" },
+    { familyId: woodwardFamily.id, symbol: "VTIAX", name: "Vanguard Total Intl Stock Index", shares: "5500", costBasis: "165000", currentPrice: "32.80", previousClose: "32.65", dayChange: "0.15", dayChangePercent: "0.46" },
+  ]);
+  console.log("Created Woodward holdings (18 positions)");
 
   // === WOODWARD REAL ESTATE ===
   await db.insert(schema.realEstate).values([
@@ -377,6 +431,21 @@ async function seed() {
     });
   }
   console.log("Created Chen accounts");
+
+  // === CHEN HOLDINGS ===
+  await db.insert(schema.holdings).values([
+    { familyId: chenFamily.id, symbol: "AAPL", name: "Apple Inc.", shares: "3500", costBasis: "490000", currentPrice: "178.52", previousClose: "176.80", dayChange: "1.72", dayChangePercent: "0.97" },
+    { familyId: chenFamily.id, symbol: "MSFT", name: "Microsoft Corp.", shares: "2000", costBasis: "560000", currentPrice: "415.60", previousClose: "412.30", dayChange: "3.30", dayChangePercent: "0.80" },
+    { familyId: chenFamily.id, symbol: "NVDA", name: "NVIDIA Corp.", shares: "1400", costBasis: "280000", currentPrice: "875.30", previousClose: "868.50", dayChange: "6.80", dayChangePercent: "0.78" },
+    { familyId: chenFamily.id, symbol: "AMZN", name: "Amazon.com Inc.", shares: "2200", costBasis: "308000", currentPrice: "185.40", previousClose: "183.90", dayChange: "1.50", dayChangePercent: "0.82" },
+    { familyId: chenFamily.id, symbol: "TSLA", name: "Tesla Inc.", shares: "1800", costBasis: "396000", currentPrice: "248.50", previousClose: "245.80", dayChange: "2.70", dayChangePercent: "1.10" },
+    { familyId: chenFamily.id, symbol: "META", name: "Meta Platforms Inc.", shares: "1000", costBasis: "280000", currentPrice: "505.75", previousClose: "502.10", dayChange: "3.65", dayChangePercent: "0.73" },
+    { familyId: chenFamily.id, symbol: "VOO", name: "Vanguard S&P 500 ETF", shares: "4000", costBasis: "1400000", currentPrice: "485.20", previousClose: "483.50", dayChange: "1.70", dayChangePercent: "0.35" },
+    { familyId: chenFamily.id, symbol: "QQQ", name: "Invesco QQQ Trust", shares: "2500", costBasis: "825000", currentPrice: "438.60", previousClose: "436.20", dayChange: "2.40", dayChangePercent: "0.55" },
+    { familyId: chenFamily.id, symbol: "AGG", name: "iShares Core U.S. Aggregate Bond ETF", shares: "5000", costBasis: "500000", currentPrice: "98.75", previousClose: "98.80", dayChange: "-0.05", dayChangePercent: "-0.05" },
+    { familyId: chenFamily.id, symbol: "VWO", name: "Vanguard FTSE Emerging Markets ETF", shares: "3500", costBasis: "147000", currentPrice: "43.20", previousClose: "42.95", dayChange: "0.25", dayChangePercent: "0.58" },
+  ]);
+  console.log("Created Chen holdings (10 positions)");
 
   // === CHEN REAL ESTATE ===
   await db.insert(schema.realEstate).values([

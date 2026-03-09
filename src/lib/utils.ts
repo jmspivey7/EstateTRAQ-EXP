@@ -45,6 +45,7 @@ export function formatDate(date: Date | string | null | undefined): string {
 
 export const MODULES = {
   dashboard: { label: "Dashboard", icon: "LayoutDashboard", alwaysOn: true },
+  "balance-sheet": { label: "Balance Sheet", icon: "Sheet", alwaysOn: true },
   accounts: { label: "Accounts", icon: "Landmark", alwaysOn: true },
   documents: { label: "Document Vault", icon: "FileText", alwaysOn: true },
   compliance: { label: "Compliance Calendar", icon: "Calendar", alwaysOn: true },
